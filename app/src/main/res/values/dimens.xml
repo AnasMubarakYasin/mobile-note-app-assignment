@@ -10,4 +10,5 @@
     <dimen name="note_item_card_stroke_width">1dp</dimen>
     <dimen name="note_item_card_text_divider">8dp</dimen>
     <dimen name="note_item_card_radius">6dp</dimen>
+    <dimen name="home_padding">8dp</dimen>
 </resources>
