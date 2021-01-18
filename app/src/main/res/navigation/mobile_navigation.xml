@@ -8,17 +8,17 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="com.example.mynote.ui.home.HomeFragment"
-        android:label="@string/menu_home"
+        android:label="@string/menu_home_title"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_label"
         android:name="com.example.mynote.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
+        android:label="@string/menu_label"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
+        android:id="@+id/subnav_label_edit"
         android:name="com.example.mynote.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
