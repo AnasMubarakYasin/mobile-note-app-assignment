@@ -12,14 +12,9 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_label"
-        android:name="com.example.mynote.ui.gallery.GalleryFragment"
-        android:label="@string/menu_label"
-        tools:layout="@layout/fragment_gallery" />
-
-    <fragment
         android:id="@+id/subnav_label_edit"
-        android:name="com.example.mynote.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:name="com.example.mynote.ui.editlabel.EditLabelFragment"
+        android:label="@string/menu_edit_label"
+        tools:layout="@layout/fragment_edit_label" />
+
 </navigation>

@@ -1,6 +1,5 @@
 package com.example.mynote.ui.note;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -15,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.example.mynote.R;
 import com.example.mynote.adapter.NoteListAdapter;
+import com.example.mynote.databinding.FragmentNoteBinding;
 import com.example.mynote.model.NoteViewModel;
 
 /**
@@ -24,35 +23,41 @@ import com.example.mynote.model.NoteViewModel;
  */
 public class NoteFragment extends Fragment {
 
-    private static final String ARG_TYPE_LAYOUT = "type-layout-grid";
-    private static final int TYPE_lAYOUT_GRID = 1;
-    private static final int TYPE_lAYOUT_LIST = 2;
+    public static final String ARG_TYPE_LAYOUT = "type-layout-grid";
+    public static final int TYPE_lAYOUT_GRID = 1;
+    public static final int TYPE_lAYOUT_LIST = 2;
+    public static final int DEF_TYPE_LAYOUT = TYPE_lAYOUT_GRID;
 
-    private int typeLayout = TYPE_lAYOUT_GRID;
-    private NoteViewModel noteViewModel;
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
+    private NoteViewModel viewModel;
+    private FragmentNoteBinding binding;
+
     public NoteFragment() {
     }
 
     @SuppressWarnings("unused")
     public static NoteFragment newInstance(int typeLayout) {
         NoteFragment fragment = new NoteFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_TYPE_LAYOUT, typeLayout);
-        fragment.setArguments(args);
+        fragment.setArguments(NoteFragment.createArg(typeLayout));
         return fragment;
+    }
+
+    public static NoteFragment newInstance(Bundle arg) {
+        NoteFragment fragment = new NoteFragment();
+        fragment.setArguments(arg);
+        return fragment;
+    }
+
+    public static Bundle createArg(int typeLayout) {
+        Bundle bundle = new Bundle();
+
+        bundle.putInt(ARG_TYPE_LAYOUT, typeLayout);
+
+        return bundle;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            typeLayout = getArguments().getInt(ARG_TYPE_LAYOUT, TYPE_lAYOUT_GRID);
-        }
     }
 
     @Override
@@ -61,27 +66,34 @@ public class NoteFragment extends Fragment {
             ViewGroup container,
             Bundle savedInstanceState
     ) {
-        View view = inflater.inflate(R.layout.fragment_note_layout, container, false);
+        binding = FragmentNoteBinding.inflate(getLayoutInflater(), container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Log.d("NoteFragment", "onCreateView: RecyclerView");
+        viewModel = new ViewModelProvider(this).get(NoteViewModel.class);
 
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+        RecyclerView view = binding.noteContainer;
 
-            if (typeLayout == TYPE_lAYOUT_GRID) {
-                recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayout.VERTICAL));
-            } else {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            }
-            NoteListAdapter noteListAdapter = new NoteListAdapter(new NoteListAdapter.DiffItemCallback());
+        NoteListAdapter noteListAdapter = new NoteListAdapter(new NoteListAdapter.DiffItemCallback());
 
-            recyclerView.setAdapter(noteListAdapter);
+        view.setAdapter(noteListAdapter);
 
-            noteViewModel = new ViewModelProvider(this).get(NoteViewModel.class);
-            noteViewModel.getAllNote().observe(getViewLifecycleOwner(), noteListAdapter::submitList);
-        }
+        viewModel.getTypeLayout().observe(getViewLifecycleOwner(), this::changeLayout);
+        viewModel.getAllNote().observe(getViewLifecycleOwner(), noteListAdapter::submitList);
+
         return view;
+    }
+
+    private void changeLayout(int typeLayout) {
+        RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(2, LinearLayout.VERTICAL);
+        if (typeLayout == TYPE_lAYOUT_LIST) {
+            layoutManager = new LinearLayoutManager(getContext());
+        }
+
+        Log.d("NoteFragment", "changeLayout: "+ typeLayout);
+
+        binding.noteContainer.setLayoutManager(layoutManager);
+    }
+
+    public void setTypeLayout(int value) {
+        viewModel.setTypeLayout(value);
     }
 }

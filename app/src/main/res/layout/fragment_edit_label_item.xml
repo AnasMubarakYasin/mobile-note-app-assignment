@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="name"
+            type="String" />
+        <variable
+            name="edit"
+            type="boolean" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checkable="true"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="3dp"
+        app:cardMaxElevation="3dp"
+        app:cardPreventCornerOverlap="true"
+        app:contentPadding="@dimen/label_item_card_padding"
+        android:layout_margin="@dimen/edit_label_card_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_left"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                android:layout_width="@dimen/edit_label_min_size"
+                android:layout_height="@dimen/edit_label_min_size"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:icon="@{edit ? @drawable/ic_round_close_24 : @drawable/ic_outline_label_24}"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_name"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/edit_label_min_size"
+                android:layout_gravity="center"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="@string/edit_label_create_new_label"
+                android:inputType="text"
+                android:singleLine="true"
+                android:text="@{name}"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_right"
+                style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+                android:layout_width="@dimen/edit_label_min_size"
+                android:layout_height="@dimen/edit_label_min_size"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:icon="@{edit ? @drawable/ic_round_check_24 : @drawable/ic_baseline_edit_24}"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

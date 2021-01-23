@@ -24,7 +24,8 @@
                     <item
                         android:id="@+id/subnav_label_edit"
                         android:icon="@drawable/ic_baseline_add_24"
-                        android:title="@string/menu_drawer_add_label_title" />
+                        android:title="@string/menu_drawer_add_label_title"
+                        android:orderInCategory="100"/>
                 </group>
             </menu>
         </item>

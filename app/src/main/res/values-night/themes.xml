@@ -15,4 +15,7 @@
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/black</item>
     </style>
+    <style name="Widget.MaterialComponents.NavigationView.Main" parent="">
+        <item name="android:listDivider">@color/light_gray</item>
+    </style>
 </resources>

@@ -9,7 +9,8 @@
     android:focusable="true"
     app:cardCornerRadius="@dimen/note_item_card_radius"
     app:cardElevation="@null"
-    app:strokeColor="@color/note_item_card_stroke_color"
+    app:rippleColor="@color/light_gray"
+    app:strokeColor="@color/light_gray"
     app:strokeWidth="@dimen/note_item_card_stroke_width">
 
     <LinearLayout

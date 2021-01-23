@@ -24,4 +24,6 @@
     <style name="Theme.MyNote.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.MyNote.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Widget.MaterialComponents.NavigationView.Main" parent="">
+    </style>
 </resources>
