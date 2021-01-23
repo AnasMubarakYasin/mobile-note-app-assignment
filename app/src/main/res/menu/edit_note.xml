@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/main_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/add_reminder_item"
+            android:title="add reminder"
+            android:icon="@drawable/ic_outline_add_alert_24"
+            app:showAsAction="always" />
+        <item
+            android:id="@+id/add_picture_item"
+            android:title="add picture"
+            android:icon="@drawable/ic_outline_add_photo_alternate_24"
+            app:showAsAction="always" />
+        <item
+            android:id="@+id/delete_item"
+            android:title="delete note"
+            android:icon="@drawable/ic_round_delete_outline_24"
+            app:showAsAction="ifRoom" />
+    </group>
+</menu>
