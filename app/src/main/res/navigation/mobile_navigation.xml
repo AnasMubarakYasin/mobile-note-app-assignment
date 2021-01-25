@@ -9,12 +9,31 @@
         android:id="@+id/nav_home"
         android:name="com.example.mynote.ui.home.HomeFragment"
         android:label="@string/menu_home_title"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_nav_home_to_edit_note"
+            app:destination="@id/edit_note" />
+    </fragment>
 
     <fragment
         android:id="@+id/subnav_label_edit"
         android:name="com.example.mynote.ui.editlabel.EditLabelFragment"
         android:label="@string/menu_edit_label"
         tools:layout="@layout/fragment_edit_label" />
+
+    <fragment
+        android:id="@+id/edit_note"
+        android:name="com.example.mynote.ui.editnote.EditNoteFragment"
+        android:label="Edit Note"
+        tools:layout="@layout/fragment_edit_note" >
+        <argument
+            android:name="isEdit"
+            app:argType="boolean"
+            android:defaultValue="false" />
+        <argument
+            android:name="noteId"
+            app:argType="long"
+            android:defaultValue="0L" />
+    </fragment>
 
 </navigation>

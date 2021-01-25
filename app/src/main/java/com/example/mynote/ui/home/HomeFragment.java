@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.example.mynote.MainActivity;
 import com.example.mynote.R;
@@ -65,6 +66,13 @@ public class HomeFragment extends Fragment {
                 HomeViewModel.KEY_NOTE_TYPE_LAYOUT,
                 HomeViewModel.DEF_NOTE_TYPE_LAYOUT
         );
+
+        binding.appBarHome.fab.setOnClickListener(fab -> {
+            HomeFragmentDirections.ActionNavHomeToEditNote action = HomeFragmentDirections
+                    .actionNavHomeToEditNote();
+
+            Navigation.findNavController(fab).navigate(action);
+        });
 
         toolbar.post(() -> {
             initOptionMenu(toolbar);

@@ -5,20 +5,8 @@
 
     <data>
         <variable
-            name="title"
-            type="String" />
-        <variable
-            name="picturePath"
-            type="String" />
-        <variable
-            name="content"
-            type="String" />
-        <variable
-            name="label"
-            type="String" />
-        <variable
-            name="reminder"
-            type="String" />
+            name="viewModel"
+            type="com.example.mynote.model.EditNoteViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,7 +20,6 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
-            android:src="@{picturePath}"
             app:layout_constraintBottom_toTopOf="@+id/title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +38,7 @@
             android:hint="Title"
             android:inputType="textMultiLine"
             android:singleLine="false"
-            android:text="@{title}"
+            android:text="@={viewModel.title}"
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@id/content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -71,7 +58,7 @@
             android:hint="Content"
             android:inputType="textMultiLine"
             android:singleLine="false"
-            android:text="@{content}"
+            android:text="@={viewModel.content}"
             android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -47,6 +47,10 @@ public class NoteData {
         this.reminder = reminder;
     }
 
+    public static NoteData create() {
+        return new NoteData("", "", "", "", "");
+    }
+
     public long getId() {
         return id;
     }
@@ -98,5 +102,18 @@ public class NoteData {
 
     public void setReminder(@NonNull String reminder) {
         this.reminder = reminder;
+    }
+
+    @NotNull
+    @Override
+    public String toString() {
+        return "NoteData{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", picturePath='" + picturePath + '\'' +
+                ", label='" + label + '\'' +
+                ", reminder='" + reminder + '\'' +
+                '}';
     }
 }

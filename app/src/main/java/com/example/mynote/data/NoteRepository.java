@@ -1,10 +1,15 @@
 package com.example.mynote.data;
 
 import android.app.Application;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 public class NoteRepository {
     private NoteDAO dao;
@@ -21,9 +26,17 @@ public class NoteRepository {
         return this.allNote;
     }
 
-    public void insert(NoteData noteData) {
+    public LiveData<NoteData> getById(long id) {
+        return dao.getById(id);
+    }
+
+    public CompletableFuture<Long> insert(NoteData noteData) {
+        return CompletableFuture.supplyAsync(() -> dao.insert(noteData), AppDatabase.executorService);
+    }
+
+    public void delete(NoteData noteData) {
         AppDatabase.executorService.execute(() -> {
-            dao.insert(noteData);
+            dao.delete(noteData);
         });
     }
 }
