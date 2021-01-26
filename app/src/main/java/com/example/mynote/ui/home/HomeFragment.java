@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.example.mynote.MainActivity;
@@ -25,9 +26,12 @@ import com.example.mynote.ui.note.NoteFragment;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+
 public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
+    public static final String DIVIDER = String.join("", Collections.nCopies(100, "-"));
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
 
@@ -36,6 +40,8 @@ public class HomeFragment extends Fragment {
             ViewGroup container,
             Bundle savedInstanceState
     ) {
+        Log.d(TAG, DIVIDER);
+
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
@@ -67,17 +73,26 @@ public class HomeFragment extends Fragment {
                 HomeViewModel.DEF_NOTE_TYPE_LAYOUT
         );
 
-        binding.appBarHome.fab.setOnClickListener(fab -> {
-            HomeFragmentDirections.ActionNavHomeToEditNote action = HomeFragmentDirections
-                    .actionNavHomeToEditNote();
+        HomeFragmentDirections.ActionNavHomeToEditNote action = HomeFragmentDirections
+                .actionNavHomeToEditNote();
 
-            Navigation.findNavController(fab).navigate(action);
+        NavController navController = Navigation.findNavController(binding.getRoot());
+
+        binding.appBarHome.fab.setOnClickListener(fab -> {
+            navController.navigate(action);
+        });
+
+        noteFragment.setOnItemSelected((card, viewHolder) -> {
+            Log.d(TAG, "onViewCreated: "+ viewHolder);
+
+            action.setIsEdit(true);
+            action.setNoteId(viewHolder.getData().getId());
+
+            navController.navigate(action);
         });
 
         toolbar.post(() -> {
             initOptionMenu(toolbar);
-
-            Log.d(TAG, "onViewCreated: "+ homeViewModel);
 
             homeViewModel.setNoteTypeLayout(typeLayout);
             homeViewModel.getTypeLayout().observe(getViewLifecycleOwner(), integer -> {

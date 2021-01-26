@@ -34,6 +34,12 @@ public class NoteRepository {
         return CompletableFuture.supplyAsync(() -> dao.insert(noteData), AppDatabase.executorService);
     }
 
+    public void update(NoteData noteData) {
+        AppDatabase.executorService.execute(() -> {
+            dao.update(noteData);
+        });
+    }
+
     public void delete(NoteData noteData) {
         AppDatabase.executorService.execute(() -> {
             dao.delete(noteData);

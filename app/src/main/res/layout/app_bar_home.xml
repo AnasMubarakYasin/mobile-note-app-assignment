@@ -19,6 +19,14 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_anchor="@id/toolbar"
+        app:layout_anchorGravity="bottom" />
+
     <include
         android:id="@+id/content_home"
         layout="@layout/content_home"

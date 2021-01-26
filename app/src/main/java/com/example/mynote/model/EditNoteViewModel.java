@@ -1,13 +1,13 @@
 package com.example.mynote.model;
 
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.databinding.Bindable;
-import androidx.databinding.library.baseAdapters.BR;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.SavedStateHandle;
 
+import com.example.mynote.data.NoteData;
 import com.example.mynote.ui.editnote.EditNoteFragmentArgs;
 
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +26,7 @@ public class EditNoteViewModel extends ObservableViewModel {
     public static final String REMINDER = "reminder";
     public static final String IS_SAVED = "saved";
     public static final String IS_EDIT_MODE = "edited";
+    public static final String CACHED = "cached";
 
     private final SavedStateHandle stateHandle;
 
@@ -40,9 +41,6 @@ public class EditNoteViewModel extends ObservableViewModel {
         if (getId() == null) {
             setId(args.getNoteId());
         }
-        if (getIsSaved() == null) {
-            setIsSaved(false);
-        }
     }
 
     @Bindable
@@ -54,14 +52,10 @@ public class EditNoteViewModel extends ObservableViewModel {
         return value;
     }
 
-    public LiveData<String> observerTitle() {
-        return stateHandle.getLiveData(TITLE, "");
-    }
-
     public void setTitle(String value) {
         if (!Objects.equals(stateHandle.get(TITLE), value)) {
             stateHandle.set(TITLE, value);
-//            notifyPropertyChanged(BR.title);
+            setIsSaved(false);
         }
         Log.d(TAG, "setTitle: "+ value);
     }
@@ -75,14 +69,10 @@ public class EditNoteViewModel extends ObservableViewModel {
         return value;
     }
 
-    public LiveData<String> observerContent() {
-        return stateHandle.getLiveData(CONTENT, "");
-    }
-
     public void setContent(String value) {
         if (!Objects.equals(stateHandle.get(CONTENT), value)) {
             stateHandle.set(CONTENT, value);
-//            notifyPropertyChanged(BR.content);
+            setIsSaved(false);
         }
 
         Log.d(TAG, "setContent: "+ value);
@@ -94,10 +84,6 @@ public class EditNoteViewModel extends ObservableViewModel {
         Log.d(TAG, "getIsSaved: "+ value);
 
         return value;
-    }
-
-    public LiveData<Boolean> observerIsSaved() {
-        return stateHandle.getLiveData(IS_SAVED, false);
     }
 
     public void setIsSaved(boolean value) {
@@ -113,10 +99,6 @@ public class EditNoteViewModel extends ObservableViewModel {
         Log.d(TAG, "getIsEditMode: "+ value);
 
         return value;
-    }
-
-    public LiveData<Boolean> observerIsEditMode() {
-        return stateHandle.getLiveData(IS_EDIT_MODE, false);
     }
 
     public void setIsEditMode(boolean value) {
@@ -139,15 +121,41 @@ public class EditNoteViewModel extends ObservableViewModel {
         Log.d(TAG, "setId: "+ value);
     }
 
-    public LiveData<Long> observerId() {
-        return stateHandle.getLiveData(ID);
-    }
-
     @NotNull
     @Override
     public String toString() {
         return "EditNoteViewModelObservable{" +
                 "stateHandle=" + stateHandle +
-                '}';
+                "}";
+    }
+
+    public NoteData getNoteData() {
+        NoteData noteData = new NoteData(
+                getTitle(),
+                getContent(),
+                "",
+                "",
+                ""
+        );
+        noteData.setId(getId());
+        return noteData;
+    }
+
+    public void setNoteData(NoteData noteData) {
+        Log.d(TAG, "setNoteData: "+ noteData);
+
+        setId(noteData.getId());
+        setTitle(noteData.getTitle());
+        setContent(noteData.getContent());
+
+        notifyChange();
+    }
+
+    public Boolean getCached() {
+        return stateHandle.get(CACHED);
+    }
+
+    public void setCached(boolean cached) {
+        stateHandle.set(CACHED, cached);
     }
 }

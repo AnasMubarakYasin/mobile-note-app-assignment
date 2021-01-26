@@ -11,11 +11,14 @@ import android.widget.TextView;
 
 import com.example.mynote.data.NoteData;
 import com.example.mynote.databinding.FragmentNoteItemBinding;
+import com.google.android.material.card.MaterialCardView;
 
 
 import org.jetbrains.annotations.NotNull;
 
 public class NoteListAdapter extends ListAdapter<NoteData, NoteListAdapter.ViewHolder> {
+
+    private ViewHolder.OnClickListener onClickListener = (view, viewHolder) -> {};
 
     public NoteListAdapter(DiffItemCallback diffItemCallback) {
         super(diffItemCallback);
@@ -31,21 +34,43 @@ public class NoteListAdapter extends ListAdapter<NoteData, NoteListAdapter.ViewH
     public void onBindViewHolder(@NotNull final ViewHolder holder, int position) {
         NoteData noteData = getItem(position);
 
-        holder.id = noteData.getId();
-        holder.title.setText(noteData.getTitle());
-        holder.content.setText(noteData.getContent());
+        holder.bind(noteData);
+        holder.setOnClickListener(onClickListener);
+    }
+
+    public void setOnClickListener(ViewHolder.OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public long id;
-        public final TextView title;
-        public final TextView content;
+        private final FragmentNoteItemBinding binding;
+        private NoteData data;
+
+        public NoteData getData() {
+            return data;
+        }
+
+        public void setOnClickListener(OnClickListener onClickListener) {
+            binding.container.setOnClickListener(v -> {
+                onClickListener.call(binding.container, this);
+            });
+        }
 
         public ViewHolder(FragmentNoteItemBinding binding) {
             super(binding.getRoot());
 
-            title = binding.titleNote;
-            content = binding.contentNote;
+            this.binding = binding;
+        }
+
+        public void  bind(NoteData data) {
+            this.data = data;
+
+            onBind();
+        }
+
+        public void  onBind() {
+            binding.titleNote.setText(data.getTitle());
+            binding.contentNote.setText(data.getContent());
         }
 
         public static ViewHolder create(ViewGroup parent) {
@@ -61,7 +86,11 @@ public class NoteListAdapter extends ListAdapter<NoteData, NoteListAdapter.ViewH
         @NotNull
         @Override
         public String toString() {
-            return super.toString() + " {id = "+ id +", content = '" + content.getText() + "'}";
+            return super.toString() + " {data = "+ data + " }";
+        }
+
+        public interface OnClickListener {
+            void call(MaterialCardView view, ViewHolder viewHolder);
         }
     }
 

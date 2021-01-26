@@ -4,6 +4,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,6 +22,7 @@ import com.example.mynote.data.NoteData;
 import com.example.mynote.databinding.FragmentEditNoteBinding;
 import com.example.mynote.model.EditNoteViewModel;
 import com.example.mynote.model.NoteViewModel;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Collections;
 
@@ -32,7 +34,6 @@ public class EditNoteFragment extends Fragment {
     private EditNoteViewModel viewModel;
     private NoteViewModel noteViewModel;
     private FragmentEditNoteBinding binding;
-    private NoteData noteData = NoteData.create();
 
     @Override
     public View onCreateView(
@@ -73,8 +74,6 @@ public class EditNoteFragment extends Fragment {
         });
 
         if (!viewModel.getIsEditMode()) {
-            toolbar.setTitle("Add Note");
-
             createNote();
         } else {
             editNote();
@@ -98,60 +97,67 @@ public class EditNoteFragment extends Fragment {
     }
 
     public void createNote() {
-        Log.d(TAG, "createNote: "+ noteData);
+        binding.toolbar.setTitle("Add Note");
 
-        bindView();
+        if (viewModel.getCached() == null) {
+            viewModel.setNoteData(NoteData.create());
+            viewModel.setCached(true);
+        }
 
         viewModel.setIsEditMode(true);
+
+        Log.d(TAG, "createNote: "+ viewModel.getNoteData());
     }
 
     public void editNote() {
+        binding.toolbar.setTitle("Edit Note");
+
         noteViewModel
                 .getById(viewModel.getId())
                 .observe(getViewLifecycleOwner(), note -> {
-                    noteData = note;
+                    viewModel.setNoteData(note);
 
-                    Log.d(TAG, "editNote: "+ note);
-
-                    bindView();
+                    Log.d(TAG, "editNote: "+ viewModel.getNoteData());
                 });
     }
 
     public void deleteNote() {
+        NoteData noteData = viewModel.getNoteData();
+
         Log.d(TAG, "deleteNote: "+ noteData);
 
-        noteViewModel.deleteNote(noteData);
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle("discard note?")
+                .setPositiveButton("yes", (dialog, which) -> {
+                    noteViewModel.deleteNote(noteData);
 
-        requireActivity().onBackPressed();
-    }
-
-    public void bindView() {
-        LifecycleOwner owner = getViewLifecycleOwner();
-
-        viewModel.observerTitle().observe(owner, noteData::setTitle);
-        viewModel.observerContent().observe(owner, noteData::setContent);
+                    requireActivity().onBackPressed();
+                })
+                .setNegativeButton("cancel", null)
+                .show();
     }
 
     public void savingNote() {
+        NoteData noteData = viewModel.getNoteData();
+
         boolean isNotSaved = !viewModel.getIsSaved();
 
-        Log.d(TAG, "savingNote: ! "+ isNotSaved);
+        Log.d(TAG, "savingNote: "+ !isNotSaved);
 
         if (isNotSaved) {
             noteViewModel
                     .saveNote(noteData)
                     .thenApplyAsync(fieldId -> {
+                        Log.d(TAG, "saveNote: async");
+
                         viewModel.setId(fieldId);
 
                         if (fieldId > 0) {
                             viewModel.setIsSaved(true);
-                        } else {
-                            if (viewModel.getId() == 0) {
-                                viewModel.setIsEditMode(false);
-                            }
                         }
-
-                        Log.d(TAG, "saveNote: success "+ fieldId);
+                        if (viewModel.getId() == 0) {
+                            viewModel.setIsEditMode(false);
+                        }
 
                         return fieldId;
                     });
@@ -159,18 +165,11 @@ public class EditNoteFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
+
+        Log.d(TAG, "onPause: ");
 
         savingNote();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        Log.d(TAG, "onDestroy: "+ viewModel);
-
-        binding = null;
     }
 }

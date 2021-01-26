@@ -12,7 +12,11 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_nav_home_to_edit_note"
-            app:destination="@id/edit_note" />
+            app:destination="@id/edit_note"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
@@ -24,7 +28,7 @@
     <fragment
         android:id="@+id/edit_note"
         android:name="com.example.mynote.ui.editnote.EditNoteFragment"
-        android:label="Edit Note"
+        android:label="@string/nav_edit_note_label"
         tools:layout="@layout/fragment_edit_note" >
         <argument
             android:name="isEdit"

@@ -19,6 +19,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public class NoteViewModel extends AndroidViewModel {
+    public static final String TAG = "NoteFragment";
+
     private NoteRepository noteRepository;
     private LiveData<List<NoteData>> allNote;
     private MutableLiveData<Integer> typeLayout;
@@ -39,12 +41,20 @@ public class NoteViewModel extends AndroidViewModel {
     }
 
     public CompletableFuture<Long> saveNote(NoteData noteData) {
+        Log.d(TAG, "saveNote: "+ noteData);
+
+        long id = noteData.getId();
         if (!noteData.getTitle().isEmpty() && !noteData.getContent().isEmpty()) {
-            if (noteData.getId() == 0) {
+            if (id == 0) {
                 return insert(noteData);
+            } else {
+                update(noteData);
             }
+            Log.d(TAG, "saveNote: success");
+        } else  {
+            Log.d(TAG, "saveNote: failed");
         }
-        return CompletableFuture.completedFuture(0L);
+        return CompletableFuture.completedFuture(id);
     }
 
     public void deleteNote(NoteData noteData) {
@@ -72,6 +82,13 @@ public class NoteViewModel extends AndroidViewModel {
     }
 
     public CompletableFuture<Long> insert(NoteData noteData) {
+        Log.d(TAG, "insert: "+ noteData);
+
         return this.noteRepository.insert(noteData);
+    }
+    public void update(NoteData noteData) {
+        Log.d(TAG, "update: "+ noteData);
+
+        noteRepository.update(noteData);
     }
 }

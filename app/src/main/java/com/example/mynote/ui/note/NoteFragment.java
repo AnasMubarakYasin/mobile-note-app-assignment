@@ -2,6 +2,7 @@ package com.example.mynote.ui.note;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -23,6 +25,7 @@ import com.example.mynote.model.NoteViewModel;
  */
 public class NoteFragment extends Fragment {
 
+    public static final String TAG = "NoteFragment";
     public static final String ARG_TYPE_LAYOUT = "type-layout-grid";
     public static final int TYPE_lAYOUT_GRID = 1;
     public static final int TYPE_lAYOUT_LIST = 2;
@@ -30,6 +33,7 @@ public class NoteFragment extends Fragment {
 
     private NoteViewModel viewModel;
     private FragmentNoteBinding binding;
+    private OnItemSelected onItemSelected = (view, viewHolder) -> {};
 
     public NoteFragment() {
     }
@@ -74,12 +78,18 @@ public class NoteFragment extends Fragment {
 
         NoteListAdapter noteListAdapter = new NoteListAdapter(new NoteListAdapter.DiffItemCallback());
 
+        noteListAdapter.setOnClickListener(onItemSelected);
+
         view.setAdapter(noteListAdapter);
 
         viewModel.getTypeLayout().observe(getViewLifecycleOwner(), this::changeLayout);
         viewModel.getAllNote().observe(getViewLifecycleOwner(), noteListAdapter::submitList);
 
         return view;
+    }
+
+    public void setOnItemSelected(OnItemSelected onItemSelected) {
+        this.onItemSelected = onItemSelected;
     }
 
     private void changeLayout(int typeLayout) {
@@ -95,5 +105,8 @@ public class NoteFragment extends Fragment {
 
     public void setTypeLayout(int value) {
         viewModel.setTypeLayout(value);
+    }
+
+    public interface OnItemSelected extends NoteListAdapter.ViewHolder.OnClickListener{
     }
 }
