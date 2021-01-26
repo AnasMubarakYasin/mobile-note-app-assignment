@@ -14,4 +14,7 @@
     <string name="menu_option_note_type_layout">Change Note Layout</string>
     <string name="edit_label_create_new_label">Create new label</string>
     <string name="nav_edit_note_label"> </string>
+    <string name="edit_note_menu_add_reminder_label">add reminder</string>
+    <string name="edit_note_menu_add_picture_label">add picture</string>
+    <string name="edit_note_menu_delete_label">delete note</string>
 </resources>

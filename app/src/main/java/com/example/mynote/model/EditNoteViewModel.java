@@ -1,12 +1,12 @@
 package com.example.mynote.model;
 
 import android.util.Log;
+import android.view.View;
 
 import androidx.databinding.Bindable;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.SavedStateHandle;
 
+import com.example.mynote.BR;
 import com.example.mynote.data.NoteData;
 import com.example.mynote.ui.editnote.EditNoteFragmentArgs;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class EditNoteViewModel extends ObservableViewModel {
 
-    public static final String TAG = "EditNoteFragment";
+    public static final String TAG = "CommonEditNoteViewModel";
 
     public static final String ID = "id";
     public static final String TITLE = "title";
@@ -26,6 +26,7 @@ public class EditNoteViewModel extends ObservableViewModel {
     public static final String REMINDER = "reminder";
     public static final String IS_SAVED = "saved";
     public static final String IS_EDIT_MODE = "edited";
+    public static final String SHOW_DATE = "show_date";
     public static final String CACHED = "cached";
 
     private final SavedStateHandle stateHandle;
@@ -121,6 +122,42 @@ public class EditNoteViewModel extends ObservableViewModel {
         Log.d(TAG, "setId: "+ value);
     }
 
+    @Bindable
+    public String getReminder() {
+        String value = stateHandle.get(REMINDER);
+        Log.d(TAG, "getReminder: "+ value);
+        return value;
+    }
+
+    public void setReminder(String value) {
+        if (!Objects.equals(stateHandle.get(REMINDER), value)) {
+            stateHandle.set(REMINDER, value);
+            if (value.isEmpty()) {
+                setShowDate(View.GONE);
+            } else {
+                setShowDate(View.VISIBLE);
+            }
+            setIsSaved(false);
+            notifyPropertyChanged(BR.reminder);
+        }
+        Log.d(TAG, "setReminder: "+ value);
+    }
+
+    @Bindable
+    public Integer getShowDate() {
+        Integer value = stateHandle.get(SHOW_DATE);
+        Log.d(TAG, "getShowDate: "+ value);
+        return value;
+    }
+
+    public void setShowDate(int value) {
+        if (!Objects.equals(stateHandle.get(SHOW_DATE), value)) {
+            stateHandle.set(SHOW_DATE, value);
+            notifyPropertyChanged(BR.showDate);
+        }
+        Log.d(TAG, "setShowDate: "+ value);
+    }
+
     @NotNull
     @Override
     public String toString() {
@@ -135,7 +172,7 @@ public class EditNoteViewModel extends ObservableViewModel {
                 getContent(),
                 "",
                 "",
-                ""
+                getReminder()
         );
         noteData.setId(getId());
         return noteData;
@@ -147,6 +184,7 @@ public class EditNoteViewModel extends ObservableViewModel {
         setId(noteData.getId());
         setTitle(noteData.getTitle());
         setContent(noteData.getContent());
+        setReminder(noteData.getReminder());
 
         notifyChange();
     }

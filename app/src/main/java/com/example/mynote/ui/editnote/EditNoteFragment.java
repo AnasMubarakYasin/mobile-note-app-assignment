@@ -1,10 +1,13 @@
 package com.example.mynote.ui.editnote;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.LifecycleOwner;
+import androidx.core.app.AlarmManagerCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.res.Resources;
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,18 +20,27 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.mynote.MainActivity;
+import com.example.mynote.NoteReminderReceiver;
 import com.example.mynote.R;
 import com.example.mynote.data.NoteData;
 import com.example.mynote.databinding.FragmentEditNoteBinding;
 import com.example.mynote.model.EditNoteViewModel;
 import com.example.mynote.model.NoteViewModel;
+import com.example.mynote.utility.ConverterDate;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 public class EditNoteFragment extends Fragment {
 
-    public static final String TAG = "EditNoteFragment";
+    public static final String TAG = "CommonEditNoteFragment";
     public static final String DIVIDER = String.join("", Collections.nCopies(100, "-"));
 
     private EditNoteViewModel viewModel;
@@ -84,8 +96,18 @@ public class EditNoteFragment extends Fragment {
         toolbar.inflateMenu(R.menu.edit_note);
         toolbar.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
-                case R.id.delete_item: {
+                case R.id.delete: {
                     deleteNote();
+
+                    return true;
+                }
+                case R.id.add_reminder: {
+                    addReminder();
+
+                    return true;
+                }
+                case R.id.add_picture: {
+
 
                     return true;
                 }
@@ -162,6 +184,107 @@ public class EditNoteFragment extends Fragment {
                         return fieldId;
                     });
         }
+    }
+
+    public void addReminder() {
+        Log.d(TAG, "addReminder: "+ viewModel.getReminder());
+
+        final int DATE = 0;
+        final int TIME = 1;
+
+        Date date;
+
+        if (viewModel.getReminder().isEmpty()) {
+            date = new Date();
+        } else  {
+            date = ConverterDate.stringToDate(viewModel.getReminder());
+        }
+
+        String dateString = ConverterDate.toDateString(date);
+        String timeString = ConverterDate.toTimeString(date);
+
+        String[] items = new String[]{dateString, timeString};
+
+        MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(getContext());
+
+        materialAlertDialogBuilder
+                .setTitle("Set Reminder")
+                .setPositiveButton("save", (dialog, which) -> {
+                    viewModel.setReminder(items[DATE] + " " + items[TIME]);
+                    setAlarm();
+                })
+                .setNegativeButton("cancel", null)
+                .setItems(items, (dialog, which) -> {
+                    if (which == DATE) {
+                        MaterialDatePicker datePicker = MaterialDatePicker.Builder
+                                .datePicker()
+                                .setTitleText("pick date")
+                                .build();
+                        datePicker.addOnPositiveButtonClickListener(selection -> {
+                            Date newDate = new Date((Long) selection);
+
+                            items[which] = ConverterDate.dateToString(date);
+                        });
+                        datePicker.addOnDismissListener(dateDialog -> {
+                            materialAlertDialogBuilder.show();
+                        });
+                        datePicker.show(getParentFragmentManager(), "");
+                    } else {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(date);
+
+                        MaterialTimePicker timePicker = new MaterialTimePicker
+                                .Builder()
+                                .setTitleText("pick time")
+                                .setTimeFormat(TimeFormat.CLOCK_12H)
+                                .setHour(calendar.get(Calendar.HOUR))
+                                .setMinute(calendar.get(Calendar.MINUTE))
+                                .build();
+                        timePicker.show(getParentFragmentManager(), "");
+                        timePicker.addOnDismissListener(timeDialog -> {
+                            materialAlertDialogBuilder.show();
+                        });
+                        timePicker.addOnPositiveButtonClickListener(v -> {
+                            items[which] = ConverterDate.toTimeString(
+                                    timePicker.getHour(),
+                                    timePicker.getMinute(),
+                                    calendar.get(Calendar.SECOND)
+                                    );
+                        });
+                    }
+                })
+                .show();
+    }
+
+    public void setAlarm() {
+        Activity activity = getActivity();
+        Intent intent = new Intent(activity, NoteReminderReceiver.class);
+
+        intent.putExtra(EditNoteViewModel.ID, viewModel.getId());
+        intent.putExtra(EditNoteViewModel.TITLE, viewModel.getTitle());
+        intent.putExtra(EditNoteViewModel.CONTENT, viewModel.getContent());
+        intent.putExtra(EditNoteViewModel.REMINDER, viewModel.getReminder());
+        intent.putExtra(EditNoteViewModel.LABEL, "");
+        intent.setAction(viewModel.getId().toString());
+
+        AlarmManager alarmManager = (AlarmManager) activity.getSystemService(Activity.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                activity,
+                NoteReminderReceiver.REQUEST_NOTIFY,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        Date date = ConverterDate.stringToDate(viewModel.getReminder());
+
+        Log.d(TAG, "setAlarm: "+ date);
+        Log.d(TAG, "setAlarm: broadcast note reminder "+ intent);
+
+        AlarmManagerCompat.setExactAndAllowWhileIdle(
+            alarmManager,
+            AlarmManager.RTC_WAKEUP,
+            date.getTime(),
+            pendingIntent
+        );
     }
 
     @Override
